@@ -1,6 +1,7 @@
 package exercise.android.reemh.todo_items;
 
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -74,6 +75,18 @@ public class MainActivityTest extends TestCase {
     //    TODO: implement the test.
     //     to set up the test, take a look at `when_userPutInputAndClicksButton_then_activityShouldCallAddItem()`
     //     to verify, use methods such as "assertEquals(...)" or "assertTrue(...)"
+    // setup
+    String userInput = "Call my grandma today at 18:00";
+    activityController.create().visible(); // let the activity think it is being shown
+    MainActivity activityUnderTest = activityController.get();
+    EditText editText = activityUnderTest.findViewById(R.id.editTextInsertTask);
+    View fab = activityUnderTest.findViewById(R.id.buttonCreateTodoItem);
+
+    // test - mock user interactions
+    editText.setText(userInput);
+    fab.performClick();
+
+    assertTrue(editText.getText().toString().isEmpty());
   }
 
   @Test
@@ -101,7 +114,7 @@ public class MainActivityTest extends TestCase {
     ArrayList<TodoItem> itemsReturnedByHolder = new ArrayList<>();
     Mockito.when(mockHolder.getCurrentItems())
       .thenReturn(itemsReturnedByHolder);
-    TodoItem itemInProgress = new TodoItem();
+    TodoItem itemInProgress = new TodoItem("do homework", "InProgress");
     // TODO: customize `itemInProgress` to have type IN-PROGRESS and description "do homework"
     itemsReturnedByHolder.add(itemInProgress);
 
@@ -122,6 +135,9 @@ public class MainActivityTest extends TestCase {
     // TODO: implement.
     //  use `viewInRecycler.findViewById(...)` to find the checkbox and the description subviews,
     //  and make sure the checkbox is not checked and the TextView shows the correct description
+    CheckBox checkBox = viewInRecycler.findViewById(R.id.checkBox);
+    assertTrue(!checkBox.isChecked());
+    assertEquals(checkBox.getText(),"do homework");
   }
 
 
@@ -133,7 +149,7 @@ public class MainActivityTest extends TestCase {
     ArrayList<TodoItem> itemsReturnedByHolder = new ArrayList<>();
     Mockito.when(mockHolder.getCurrentItems())
       .thenReturn(itemsReturnedByHolder);
-    TodoItem itemDone = new TodoItem();
+    TodoItem itemDone = new TodoItem("buy tomatoes", "Done");
     // TODO: customize `itemDone` to have type DONE and description "buy tomatoes"
     itemsReturnedByHolder.add(itemDone);
 
@@ -154,5 +170,8 @@ public class MainActivityTest extends TestCase {
     // TODO: implement.
     //  use `viewInRecycler.findViewById(...)` to find the checkbox and the description subviews,
     //  and make sure the checkbox is checked and the TextView shows the correct description
+    CheckBox checkBox = viewInRecycler.findViewById(R.id.checkBox);
+    assertTrue(checkBox.isChecked());
+    assertEquals(checkBox.getText(),"buy tomatoes");
   }
 }

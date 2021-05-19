@@ -6,13 +6,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.EditText;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
   public TodoItemsHolder holder = null;
+  public MyAdapter myAdapter = null;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -20,13 +28,58 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
 
     if (holder == null) {
-      holder = new TodoItemsHolderImpl();
+      holder = new TodoItemsHolderImpl(new ArrayList<>());
     }
+
+    myAdapter = new MyAdapter(holder, this);
+
 
     // TODO: implement the specs as defined below
     //    (find all UI components, hook them up, connect everything you need)
+
+    EditText editTextInsertTask = findViewById(R.id.editTextInsertTask);
+    FloatingActionButton buttonCreateTodoItem = findViewById(R.id.buttonCreateTodoItem);
+    RecyclerView recyclerTodoItemsList = findViewById(R.id.recyclerTodoItemsList);
+
+    recyclerTodoItemsList.setLayoutManager(new LinearLayoutManager(this));
+    recyclerTodoItemsList.setAdapter(myAdapter);
+
+    buttonCreateTodoItem.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        if (!editTextInsertTask.getText().toString().isEmpty()){
+          int idx = holder.addNewInProgressItem(editTextInsertTask.getText().toString());
+          editTextInsertTask.setText(null);
+          myAdapter.notifyItemInserted(idx);
+        }
+      }
+    });
+    myAdapter.notifyDataSetChanged();
   }
-}
+
+  @Override
+  protected void onSaveInstanceState(@NonNull Bundle outState) {
+    super.onSaveInstanceState(outState);
+    EditText editTextInsertTask = findViewById(R.id.editTextInsertTask);
+    outState.putString("cur_txt", editTextInsertTask.getText().toString());
+    outState.putSerializable("holder", (Serializable) holder);
+  }
+
+  @Override
+  protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+    super.onRestoreInstanceState(savedInstanceState);
+    EditText editTextInsertTask = findViewById(R.id.editTextInsertTask);
+    editTextInsertTask.setText(savedInstanceState.getString("cur_txt"));
+    holder = new TodoItemsHolderImpl(((TodoItemsHolderImpl) savedInstanceState.getSerializable("holder")).getCurrentItems());
+    myAdapter = new MyAdapter(holder, this);
+    RecyclerView recyclerTodoItemsList = findViewById(R.id.recyclerTodoItemsList);
+    recyclerTodoItemsList.setLayoutManager(new LinearLayoutManager(this));
+    recyclerTodoItemsList.setAdapter(myAdapter);
+  }
+
+};
+
+
 
 /*
 
