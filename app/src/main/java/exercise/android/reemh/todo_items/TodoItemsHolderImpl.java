@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -69,9 +70,11 @@ public class TodoItemsHolderImpl  implements TodoItemsHolder, Serializable{
 
 class MyHolder extends RecyclerView.ViewHolder{
   public  CheckBox checkBox;
+  public TextView checkBoxText;
   public MyHolder(@NonNull View itemView) {
     super(itemView);
     checkBox = itemView.findViewById(R.id.checkBox);
+    checkBoxText = itemView.findViewById(R.id.checkBoxTextView);
   }
 };
 
@@ -93,13 +96,13 @@ class MyAdapter extends RecyclerView.Adapter<MyHolder>{
   public void onBindViewHolder(@NonNull MyHolder holder, int position) {
     position = holder.getLayoutPosition();
     TodoItem item = itemsHolder.getCurrentItems().get(position);
-    holder.checkBox.setText(item.description);
+    holder.checkBoxText.setText(item.description);
     if (!itemsHolder.getCurrentItems().get(position).state.equals("InProgress")){
-      holder.checkBox.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+      holder.checkBoxText.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
       holder.checkBox.setChecked(true);
     }
     else{
-      holder.checkBox.setPaintFlags(0);
+      holder.checkBoxText.setPaintFlags(0);
       holder.checkBox.setChecked(false);
     }
 
@@ -109,18 +112,18 @@ class MyAdapter extends RecyclerView.Adapter<MyHolder>{
         int position = holder.getLayoutPosition();
         if (itemsHolder.getCurrentItems().get(position).state.equals("InProgress")){
           int newPos = itemsHolder.markItemDone(itemsHolder.getCurrentItems().get(position));
-          holder.checkBox.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+          holder.checkBoxText.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
           notifyItemMoved(position, newPos);
         }
         else{
           int newPos = itemsHolder.markItemInProgress(itemsHolder.getCurrentItems().get(position));
-          holder.checkBox.setPaintFlags(0);
+          holder.checkBoxText.setPaintFlags(0);
           notifyItemMoved(position, newPos);
         }
       }
     });
 
-    holder.checkBox.setOnLongClickListener(new View.OnLongClickListener() {
+    holder.checkBoxText.setOnLongClickListener(new View.OnLongClickListener() {
       @Override
       public boolean onLongClick(View view) {
         int pos = holder.getLayoutPosition();
@@ -145,6 +148,31 @@ class MyAdapter extends RecyclerView.Adapter<MyHolder>{
         AlertDialog dialog = builder.create();
         dialog.show();
         return true;
+      }
+    });
+
+    holder.checkBoxText.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        int pos = holder.getLayoutPosition();
+        TodoItem item = itemsHolder.getCurrentItems().get(pos);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+        builder.setCancelable(true);
+        builder.setTitle("blablalblasldasda");
+        builder.setMessage(item.description);
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+          }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+          }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
       }
     });
   }

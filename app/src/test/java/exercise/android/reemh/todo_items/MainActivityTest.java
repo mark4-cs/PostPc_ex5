@@ -3,6 +3,7 @@ package exercise.android.reemh.todo_items;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -137,7 +138,8 @@ public class MainActivityTest extends TestCase {
     //  and make sure the checkbox is not checked and the TextView shows the correct description
     CheckBox checkBox = viewInRecycler.findViewById(R.id.checkBox);
     assertTrue(!checkBox.isChecked());
-    assertEquals(checkBox.getText(),"do homework");
+    TextView checkBoxtxt = viewInRecycler.findViewById(R.id.checkBoxTextView);
+    assertEquals(checkBoxtxt.getText(),"do homework");
   }
 
 
@@ -172,6 +174,7 @@ public class MainActivityTest extends TestCase {
     //  and make sure the checkbox is checked and the TextView shows the correct description
     CheckBox checkBox = viewInRecycler.findViewById(R.id.checkBox);
     assertTrue(checkBox.isChecked());
-    assertEquals(checkBox.getText(),"buy tomatoes");
+    TextView checkBoxtxt = viewInRecycler.findViewById(R.id.checkBoxTextView);
+    assertEquals(checkBoxtxt.getText(),"buy tomatoes");
   }
 }
