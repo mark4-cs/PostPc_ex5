@@ -156,23 +156,9 @@ class MyAdapter extends RecyclerView.Adapter<MyHolder>{
       public void onClick(View view) {
         int pos = holder.getLayoutPosition();
         TodoItem item = itemsHolder.getCurrentItems().get(pos);
-        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-        builder.setCancelable(true);
-        builder.setTitle("blablalblasldasda");
-        builder.setMessage(item.description);
-        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-          }
-        });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-          }
-        });
 
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        // CALL EDIT ACTIVITY, pass item
+
       }
     });
   }
