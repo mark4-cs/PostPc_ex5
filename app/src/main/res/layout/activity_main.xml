@@ -8,7 +8,7 @@
     tools:context=".MainActivity">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/buttonCreateTodoItem"
+        android:id="@+id/buttonEditTodoItem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -31,10 +31,10 @@
         android:paddingTop="8dp"
         android:paddingEnd="16dp"
         android:paddingBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="@id/buttonCreateTodoItem"
-        app:layout_constraintEnd_toStartOf="@id/buttonCreateTodoItem"
+        app:layout_constraintBottom_toBottomOf="@id/buttonEditTodoItem"
+        app:layout_constraintEnd_toStartOf="@id/buttonEditTodoItem"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/buttonCreateTodoItem" />
+        app:layout_constraintTop_toTopOf="@id/buttonEditTodoItem" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerTodoItemsList"

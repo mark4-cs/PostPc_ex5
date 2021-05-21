@@ -5,22 +5,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
   public TodoItemsHolder holder = null;
   public MyAdapter myAdapter = null;
+  private BroadcastReceiver receiverDBchanges;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +27,8 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
 
     if (holder == null) {
-      holder = new TodoItemsHolderImpl(new ArrayList<>());
+      holder = TodoApplication.getHolder();
+      holder.setContext(this);
     }
 
     myAdapter = new MyAdapter(holder, this);
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     //    (find all UI components, hook them up, connect everything you need)
 
     EditText editTextInsertTask = findViewById(R.id.editTextInsertTask);
-    FloatingActionButton buttonCreateTodoItem = findViewById(R.id.buttonCreateTodoItem);
+    FloatingActionButton buttonCreateTodoItem = findViewById(R.id.buttonEditTodoItem);
     RecyclerView recyclerTodoItemsList = findViewById(R.id.recyclerTodoItemsList);
 
     recyclerTodoItemsList.setLayoutManager(new LinearLayoutManager(this));
@@ -54,7 +54,27 @@ public class MainActivity extends AppCompatActivity {
         }
       }
     });
-    myAdapter.notifyDataSetChanged();
+
+    receiverDBchanges = new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+        if (intent.getAction().equals("db_changed")){
+          holder = TodoApplication.getHolder();
+          holder.setContext(MainActivity.this);
+          myAdapter = new MyAdapter(holder, MainActivity.this);
+          recyclerTodoItemsList.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+          recyclerTodoItemsList.setAdapter(myAdapter);
+        }
+      }
+    };
+
+    registerReceiver(receiverDBchanges, new IntentFilter("db_changed"));
+  }
+
+  @Override
+  protected void onDestroy(){
+    unregisterReceiver(receiverDBchanges);
+    super.onDestroy();
   }
 
   @Override
@@ -62,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
     super.onSaveInstanceState(outState);
     EditText editTextInsertTask = findViewById(R.id.editTextInsertTask);
     outState.putString("cur_txt", editTextInsertTask.getText().toString());
-    outState.putSerializable("holder", (Serializable) holder);
   }
 
   @Override
@@ -70,11 +89,6 @@ public class MainActivity extends AppCompatActivity {
     super.onRestoreInstanceState(savedInstanceState);
     EditText editTextInsertTask = findViewById(R.id.editTextInsertTask);
     editTextInsertTask.setText(savedInstanceState.getString("cur_txt"));
-    holder = new TodoItemsHolderImpl(((TodoItemsHolderImpl) savedInstanceState.getSerializable("holder")).getCurrentItems());
-    myAdapter = new MyAdapter(holder, this);
-    RecyclerView recyclerTodoItemsList = findViewById(R.id.recyclerTodoItemsList);
-    recyclerTodoItemsList.setLayoutManager(new LinearLayoutManager(this));
-    recyclerTodoItemsList.setAdapter(myAdapter);
   }
 
 };

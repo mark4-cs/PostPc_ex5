@@ -1,5 +1,6 @@
 package exercise.android.reemh.todo_items;
 
+import android.content.Context;
 import android.view.View;
 
 import java.util.List;
@@ -25,4 +26,8 @@ public interface TodoItemsHolder{
 
   /** delete the @param item */
   void deleteItem(TodoItem item);
+
+  void setContext(Context ctx);
+
+  void changeDescription(TodoItem item, String newDescription);
 }

@@ -3,6 +3,7 @@ package exercise.android.reemh.todo_items;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -22,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import android.app.Application;
@@ -32,9 +34,15 @@ import com.google.android.material.button.MaterialButton;
 // TODO: implement!
 public class TodoItemsHolderImpl  implements TodoItemsHolder, Serializable{
   private List<TodoItem> items;
+  public Context ctx;
 
 
-  TodoItemsHolderImpl(List<TodoItem> items){this.items = new ArrayList<>(items);}
+  TodoItemsHolderImpl(List<TodoItem> items, Context ctx){this.items = new ArrayList<>(items); this.ctx = ctx;}
+
+  @Override
+  public void setContext(Context ctx){
+    this.ctx = ctx;
+  }
 
   @Override
   public List<TodoItem> getCurrentItems() {return new ArrayList<>(this.items);}
@@ -50,20 +58,43 @@ public class TodoItemsHolderImpl  implements TodoItemsHolder, Serializable{
   @Override
   public int markItemDone(TodoItem item) {
     items.get(items.indexOf(item)).state = "Done";
+    int oldidx = this.items.indexOf(item);
     Collections.sort(this.items);
-    return this.items.indexOf(item);
+    int newidx = this.items.indexOf(item);
+    Intent broadcast = new Intent("db_changed");
+    broadcast.putExtra("new_index", newidx);
+    broadcast.putExtra("old_index", oldidx);
+    ctx.sendBroadcast(broadcast);
+    return newidx;
   }
 
   @Override
   public int markItemInProgress(TodoItem item) {
     items.get(items.indexOf(item)).state = "InProgress";
+    int oldidx = this.items.indexOf(item);
     Collections.sort(this.items);
-    return this.items.indexOf(item);
+    int newidx = this.items.indexOf(item);
+    Intent broadcast = new Intent("db_changed");
+    broadcast.putExtra("new_index", newidx);
+    broadcast.putExtra("old_index", oldidx);
+    ctx.sendBroadcast(broadcast);
+    return newidx;
   }
 
   @Override
   public void deleteItem(TodoItem item) {
     items.remove(item);
+    ctx.sendBroadcast(new Intent("db_changed"));
+  }
+
+  @Override
+  public void changeDescription(TodoItem item, String newDescription){
+    item.description = newDescription;
+    int idx = this.items.indexOf(item);
+    Intent broadcast = new Intent("db_changed");
+    broadcast.putExtra("new_index", idx);
+    broadcast.putExtra("old_index", idx);
+    ctx.sendBroadcast(broadcast);
   }
 
 };
@@ -113,12 +144,12 @@ class MyAdapter extends RecyclerView.Adapter<MyHolder>{
         if (itemsHolder.getCurrentItems().get(position).state.equals("InProgress")){
           int newPos = itemsHolder.markItemDone(itemsHolder.getCurrentItems().get(position));
           holder.checkBoxText.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
-          notifyItemMoved(position, newPos);
+//          notifyItemMoved(position, newPos);
         }
         else{
           int newPos = itemsHolder.markItemInProgress(itemsHolder.getCurrentItems().get(position));
           holder.checkBoxText.setPaintFlags(0);
-          notifyItemMoved(position, newPos);
+//          notifyItemMoved(position, newPos);
         }
       }
     });
@@ -156,9 +187,13 @@ class MyAdapter extends RecyclerView.Adapter<MyHolder>{
       public void onClick(View view) {
         int pos = holder.getLayoutPosition();
         TodoItem item = itemsHolder.getCurrentItems().get(pos);
-
-        // CALL EDIT ACTIVITY, pass item
-
+        Date cur_last_mod = item.lastModified;
+        Intent myIntent = new Intent(ctx, EditTodoActivity.class);
+//        myIntent.putExtra("item", item);
+        myIntent.putExtra("item_idx", pos);
+        ctx.startActivity(myIntent);
+        notifyItemMoved(pos,itemsHolder.getCurrentItems().indexOf(item));
+        notifyItemChanged(pos);
       }
     });
   }

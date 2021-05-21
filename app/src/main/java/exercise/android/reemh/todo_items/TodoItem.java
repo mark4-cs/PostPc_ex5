@@ -10,12 +10,17 @@ public class TodoItem implements Serializable, Comparable<TodoItem>{
   // TODO: edit this class as you want
     public String description, state;
     public Date createdOn;
+    public Date lastModified;
 
     TodoItem(String description, String status){
         this.description = description;
         this.state = status;
         this.createdOn = new Date();
+        this.lastModified = this.createdOn;
+    }
 
+    void updateLastModified(Date newDate){
+        this.lastModified = newDate;
     }
 
     @Override
