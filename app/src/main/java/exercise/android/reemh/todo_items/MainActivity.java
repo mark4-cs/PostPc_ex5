@@ -15,6 +15,8 @@ import android.widget.EditText;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.ParseException;
+
 public class MainActivity extends AppCompatActivity {
 
   public TodoItemsHolder holder = null;
@@ -28,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
     if (holder == null) {
       holder = TodoApplication.getHolder();
-      holder.setContext(this);
     }
 
     myAdapter = new MyAdapter(holder, this);
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     //    (find all UI components, hook them up, connect everything you need)
 
     EditText editTextInsertTask = findViewById(R.id.editTextInsertTask);
-    FloatingActionButton buttonCreateTodoItem = findViewById(R.id.buttonEditTodoItem);
+    FloatingActionButton buttonCreateTodoItem = findViewById(R.id.buttonCreateTodoItem);
     RecyclerView recyclerTodoItemsList = findViewById(R.id.recyclerTodoItemsList);
 
     recyclerTodoItemsList.setLayoutManager(new LinearLayoutManager(this));
@@ -60,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
       public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals("db_changed")){
           holder = TodoApplication.getHolder();
-          holder.setContext(MainActivity.this);
           myAdapter = new MyAdapter(holder, MainActivity.this);
           recyclerTodoItemsList.setLayoutManager(new LinearLayoutManager(MainActivity.this));
           recyclerTodoItemsList.setAdapter(myAdapter);

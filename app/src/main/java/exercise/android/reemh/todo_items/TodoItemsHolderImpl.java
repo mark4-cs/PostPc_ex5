@@ -21,10 +21,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.Serializable;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import android.app.Application;
 import android.content.Context;
@@ -35,9 +37,29 @@ import com.google.android.material.button.MaterialButton;
 public class TodoItemsHolderImpl  implements TodoItemsHolder, Serializable{
   private List<TodoItem> items;
   public Context ctx;
+  private final SharedPreferences sp;
 
 
-  TodoItemsHolderImpl(List<TodoItem> items, Context ctx){this.items = new ArrayList<>(items); this.ctx = ctx;}
+  TodoItemsHolderImpl(List<TodoItem> items, Context ctx){this.items = new ArrayList<>(items); this.ctx = ctx;
+  this.sp = ctx.getSharedPreferences("local_db_todo", Context.MODE_PRIVATE);
+  initializeFromSp();
+  }
+
+  private void initializeFromSp(){
+    Set<String> keys = sp.getAll().keySet();
+    for (String key: keys){
+      String todoRepr = sp.getString(key, null);
+      if (todoRepr == null){continue;}
+      TodoItem t = new TodoItem("", "");
+      try {
+        t.changeFromString(todoRepr);
+      } catch (ParseException e) {
+        e.printStackTrace();
+      }
+      this.items.add(t);
+    }
+    Collections.sort(this.items);
+  }
 
   @Override
   public void setContext(Context ctx){
@@ -52,6 +74,10 @@ public class TodoItemsHolderImpl  implements TodoItemsHolder, Serializable{
     TodoItem i = new TodoItem(description, "InProgress");
     items.add(i);
     Collections.sort(this.items);
+
+    SharedPreferences.Editor editor = sp.edit();
+    editor.putString(i.createdOn.toString(), i.toStringRep()); //to string);
+    editor.apply();
     return this.items.indexOf(i);
   }
 
@@ -64,6 +90,11 @@ public class TodoItemsHolderImpl  implements TodoItemsHolder, Serializable{
     Intent broadcast = new Intent("db_changed");
     broadcast.putExtra("new_index", newidx);
     broadcast.putExtra("old_index", oldidx);
+
+    SharedPreferences.Editor editor = sp.edit();
+    editor.putString(item.createdOn.toString(),item.toStringRep()); //to string);
+    editor.apply();
+
     ctx.sendBroadcast(broadcast);
     return newidx;
   }
@@ -77,6 +108,11 @@ public class TodoItemsHolderImpl  implements TodoItemsHolder, Serializable{
     Intent broadcast = new Intent("db_changed");
     broadcast.putExtra("new_index", newidx);
     broadcast.putExtra("old_index", oldidx);
+
+    SharedPreferences.Editor editor = sp.edit();
+    editor.putString(item.createdOn.toString(),item.toStringRep()); //to string);
+    editor.apply();
+
     ctx.sendBroadcast(broadcast);
     return newidx;
   }
@@ -84,6 +120,11 @@ public class TodoItemsHolderImpl  implements TodoItemsHolder, Serializable{
   @Override
   public void deleteItem(TodoItem item) {
     items.remove(item);
+
+    SharedPreferences.Editor editor = sp.edit();
+    editor.remove(item.createdOn.toString());
+    editor.apply();
+
     ctx.sendBroadcast(new Intent("db_changed"));
   }
 
@@ -94,6 +135,11 @@ public class TodoItemsHolderImpl  implements TodoItemsHolder, Serializable{
     Intent broadcast = new Intent("db_changed");
     broadcast.putExtra("new_index", idx);
     broadcast.putExtra("old_index", idx);
+
+    SharedPreferences.Editor editor = sp.edit();
+    editor.putString(item.createdOn.toString(),item.toStringRep()); //to string);
+    editor.apply();
+
     ctx.sendBroadcast(broadcast);
   }
 

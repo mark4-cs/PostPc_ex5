@@ -13,7 +13,7 @@ public class TodoApplication extends Application {
     public void onCreate(){
         super.onCreate();
         instance = this;
-        holder = new TodoItemsHolderImpl(new ArrayList<>(), this);}
+        holder = new TodoItemsHolderImpl(new ArrayList<>(), instance);}
 
     private static TodoApplication instance = null;
     public static TodoApplication getTodoApplication(){return instance;}
