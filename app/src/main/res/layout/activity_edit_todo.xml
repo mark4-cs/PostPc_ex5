@@ -21,7 +21,7 @@
         android:id="@+id/created_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="50dp"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,7 +42,8 @@
         android:id="@+id/switch_InProgress_Done"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="70dp"
+        app:layout_constraintBottom_toTopOf="@+id/editTextInsertTask"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/modified_date" />
@@ -51,9 +52,9 @@
         android:id="@+id/InProgressSwitchText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="124dp"
-        android:layout_marginEnd="12dp"
+        android:layout_marginTop="74dp"
         android:text="In-Progress"
+        app:layout_constraintBottom_toTopOf="@+id/editTextInsertTask"
         app:layout_constraintEnd_toStartOf="@+id/switch_InProgress_Done"
         app:layout_constraintTop_toBottomOf="@+id/modified_date" />
 
@@ -61,8 +62,9 @@
         android:id="@+id/DoneSwitchText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="124dp"
+        android:layout_marginTop="74dp"
         android:text="Done"
+        app:layout_constraintBottom_toTopOf="@+id/editTextInsertTask"
         app:layout_constraintStart_toEndOf="@+id/switch_InProgress_Done"
         app:layout_constraintTop_toBottomOf="@+id/modified_date" />
 
